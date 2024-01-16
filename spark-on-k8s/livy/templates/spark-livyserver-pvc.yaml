@@ -1,0 +1,53 @@
+{{- if and .Values.Livy.Persistence.Enabled (not .Values.Livy.Persistence.ExistingClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "livy.fullname" . }}
+{{- with .Values.Livy.Persistence.annotations  }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/name: {{ include "name" . }}
+    helm.sh/chart: {{ include "livy.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  accessModes:
+    - {{ .Values.Livy.Persistence.AccessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.Livy.Persistence.Size | quote }}
+{{- with .Values.Livy.Persistence.StorageClass }}
+{{- if (eq "-" .) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ . }}"
+{{- end }}
+{{- end }}
+{{- end }}
+---
+{{- if and .Values.Livy.VolumeShare.Enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: livy-jars
+  labels:
+    app.kubernetes.io/name: {{ include "name" . }}
+    helm.sh/chart: {{ include "livy.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  accessModes:
+    - {{ .Values.Livy.VolumeShare.AccessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.Livy.VolumeShare.Size | quote }}
+{{- with .Values.Livy.VolumeShare.StorageClass }}
+{{- if (eq "-" .) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ . }}"
+{{- end }}
+{{- end }}
+{{- end }}
