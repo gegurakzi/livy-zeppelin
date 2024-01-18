@@ -37,7 +37,9 @@ RUN apt-get install -y unzip && \
     rm -rf $LIVY_HOME && \
     ln -s /opt/apache-livy-${LIVY_VERSION}-bin $LIVY_HOME && \
     rm -f /apache-livy-${LIVY_VERSION}-bin.zip
-    
+
+ENV SPARK_EXTRA_CLASSPATH=$LIVY_HOME/jars:$SPARK_EXTRA_CLASSPATH
+
 COPY kubernetes-entrypoint.sh /kubernetes-entrypoint.sh
 COPY pod-templates/ /pod-templates
 

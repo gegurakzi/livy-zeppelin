@@ -49,7 +49,6 @@ Livy:
     # Livy on K8s Values
     LIVY_LIVY_SPARK_MASTER: {value: "k8s://kubernetes.default.svc.cluster.local:443"}
     LIVY_LIVY_SPARK_DEPLOY0MODE: {value: "cluster"}
-    LIVY_SPARK_KUBERNETES_FILE_UPLOAD_PATH: {value: "/root/.livy-sessions"}
     LIVY_SPARK_KUBERNETES_CONTAINER_IMAGE: {value: "spark-standalone:livy"}
     LIVY_SPARK_KUBERNETES_CONTAINER_IMAGE_PULL1POLICY: {value: "IfNotPresent"}
     LIVY_SPARK_KUBERNETES_DRIVER_ANNOTATION_CREATED0BY: {value: "livy"}
@@ -59,6 +58,9 @@ Livy:
     #LIVY_SPARK_KUBERNETES_CONTAINER_IMAGE_PULL1SECRETS: {value: ""}
     LIVY_SPARK_KUBERNETES_DRIVER_POD1Template1File: {value: "/pod-templates/driver.yaml"}
     LIVY_SPARK_KUBERNETES_EXECUTOR_POD1Template1File: {value: "/pod-templates/executor.yaml"}
+    # Sharing jars via volume
+    LIVY_SPARK_KUBERNETES_FILE_UPLOAD_PATH: { value: "/root/.livy-sessions" }
+    LIVY_LIVY_FILE_LOCAL0DIR0WHITELIST: { value: "/root/.livy-sessions" }
   EnvFrom: []
   LivyConf: {}
   SparkDefaultsConf: {}
