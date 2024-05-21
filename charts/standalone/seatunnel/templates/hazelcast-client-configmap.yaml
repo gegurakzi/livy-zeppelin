@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hazelcast-client
+data:
+  hazelcast-client.yaml: |
+    {{- tpl (toYaml .Values.configmaps.hazelcastClient | nindent 4) . | replace "cluster-members: |-" "cluster-members:" }}

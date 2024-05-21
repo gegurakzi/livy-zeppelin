@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hazelcast
+data:
+  hazelcast.yaml: |
+    {{- tpl (toYaml .Values.configmaps.hazelcast | nindent 4) . | replace "member-list: |-" "member-list:" }}

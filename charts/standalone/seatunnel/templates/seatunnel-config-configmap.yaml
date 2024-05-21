@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: seatunnel-config
+data:
+  {{ .Values.configmaps.seatunnelConfig.fileName }}: |-
+    {{- .Files.Get .Values.configmaps.seatunnelConfig.fileName | nindent 4 }}

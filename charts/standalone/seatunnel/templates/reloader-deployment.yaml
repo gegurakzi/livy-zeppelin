@@ -1,0 +1,68 @@
+{{- if .Values.reloader.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- with .Values.reloader.serviceAccount.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.reloader.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+    group: com.stakater.platform
+    provider: stakater
+    version: v1.0.82
+  {{- end }}
+  name: {{ include "seatunnel.reloader.fullname" . }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: reloader-reloader
+      release: "reloader"
+  template:
+    metadata:
+      {{- with .Values.reloader.labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+        group: com.stakater.platform
+        provider: stakater
+        version: v1.0.82
+      {{- end }}
+    spec:
+      containers:
+        - image: "{{ .Values.reloader.image.repository }}:{{ .Values.reloader.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.reloader.image.pullPolicy }}
+          name: {{ .Chart.Name }}-reloader
+          ports:
+            - name: http
+              containerPort: 9090
+          livenessProbe:
+            httpGet:
+              path: /live
+              port: http
+            timeoutSeconds: 5
+            failureThreshold: 5
+            periodSeconds: 10
+            successThreshold: 1
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: http
+            timeoutSeconds: 5
+            failureThreshold: 5
+            periodSeconds: 10
+            successThreshold: 1
+            initialDelaySeconds: 10
+
+          securityContext:
+            {}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: {{ include "seatunnel.reloader.serviceAccountName" . }}
+{{- end }}

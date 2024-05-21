@@ -1,0 +1,131 @@
+# Default values for spark.
+# This is a YAML-formatted file.
+# Declare name/value pairs to be passed into your templates.
+# name: value
+
+Spark:
+  Path: "/opt/spark"
+  # Selects whether to deploy cluster on Spark-standalone or Spark-on-K8s mode.
+
+Livy:
+  Global: {}
+  Name: livy
+  Image: "livy"
+  ImageTag: "livyserver"
+  ImagePullSecrets: []
+  NodeSelector: {}
+  Tolerations: []
+  Affinity: {}
+  Rbac:
+    Create: true
+  Service:
+    Type: NodePort
+    Port: 8080
+    # If not set, a name is generated using the fullname template
+    Name:
+  ServiceAccount:
+    Create: true
+    # If not set and create is true, a name is generated using the fullname template
+    Name:
+  SparkServiceAccount:
+    Create: true
+    # If not set and create is true, a name is generated using the fullname template
+    Name:
+  Resources: {}
+  Env:
+    LIVY_SPARK_EVENT1LOG_ENABLED: {value: "false"}
+    #LIVY_SPARK_EVENT1LOG_DIR: {value: "file:///tmp/history-server"}
+    #####################
+    # Livy on Local Values
+    #LIVY_LIVY_SPARK_MASTER: {value: "local[4]"}
+    #####################
+     # Livy on Spark Standalone Cluster Values
+    #LIVY_LIVY_SPARK_MASTER: {value: "spark://spark-master:7077"}
+    #LIVY_LIVY_SPARK_DEPLOY0MODE: {value: "client"}
+    #LIVY_SPARK_EXECUTOR_MEMORY: {value: "1G"}
+    #LIVY_SPARK_SHUFFLE_SERVICE_ENABLED: {value: "false"}
+    #LIVY_SPARK_DYNAMIC1ALLOCATION_ENABLED: {value: "false"}
+    #####################
+    # Livy on K8s Values
+    LIVY_LIVY_SPARK_MASTER: {value: "k8s://kubernetes.default.svc.cluster.local:443"}
+    LIVY_LIVY_SPARK_DEPLOY0MODE: {value: "cluster"}
+    LIVY_SPARK_KUBERNETES_CONTAINER_IMAGE: {value: "livy:livy"}
+    LIVY_SPARK_KUBERNETES_CONTAINER_IMAGE_PULL1POLICY: {value: "IfNotPresent"}
+    LIVY_SPARK_KUBERNETES_DRIVER_ANNOTATION_CREATED0BY: {value: "livy"}
+    LIVY_SPARK_KUBERNETES_EXECUTOR_ANNOTATION_CREATED0BY: {value: "livy"}
+    LIVY_SPARK_KUBERNETES_DRIVER_LABEL_NAME: {value: "driver"}
+    LIVY_SPARK_KUBERNETES_EXECUTOR_LABEL_NAME: {value: "executor"}
+    #LIVY_SPARK_KUBERNETES_CONTAINER_IMAGE_PULL1SECRETS: {value: ""}
+    LIVY_SPARK_KUBERNETES_DRIVER_POD1Template1File: {value: "/pod-templates/driver.yaml"}
+    LIVY_SPARK_KUBERNETES_EXECUTOR_POD1Template1File: {value: "/pod-templates/executor.yaml"}
+    # Sharing jars via volume
+    LIVY_SPARK_KUBERNETES_FILE_UPLOAD_PATH: { value: "file:///root/.livy-sessions" }
+    LIVY_LIVY_FILE_LOCAL0DIR0WHITELIST: { value: "/root/.livy-sessions" }
+  EnvFrom: []
+  LivyConf: {}
+  SparkDefaultsConf: {}
+  LivyClientConf: {}
+  Persistence:
+    Enabled: false
+    #ExistingClaim
+    #storageClass: "nfs-client"
+    #accessMode: ReadWriteOnce
+    #size: 20Gi
+    annotations: {}
+  VolumeShare:
+    Enabled: true
+    MountPath: /root/.livy-sessions
+    StorageClass: "nfs-client"
+    AccessMode: ReadWriteOnce
+    Size: 20Gi
+  
+Zeppelin:
+  Name: zeppelin
+  Image: "spark-standalone"
+  ImageTag: "zeppelin"
+  Replicas: 1
+  Component: "zeppelin"
+  Cpu: "100m"
+  ServicePort: 8080
+  ContainerPort: 8080
+  ServiceType: LoadBalancer
+  Headless: false
+  # Zeppelin interpreter run mode 
+  RunMode: local
+  Ingress:
+    Enabled: false
+    Path: "/"
+    Tls: []
+  #    - Hosts:
+  #    SecretName: zeppelin
+  # Used to create an Ingress record.
+  # Hosts:
+  # - example.local
+  # Annotations:
+  #   kubernetes.io/ingress.class: nginx
+  #   kubernetes.io/tls-acme: "true"
+  # Tls:
+  #   Enabled: true
+  # Secrets must be manually created in the namespace.
+  #   SecretName: example-tls
+  #   Hosts:
+  #   - example.local
+  Persistence:
+    Config:
+      Enabled: false
+      ## etcd data Persistent Volume Storage Class
+      ## If defined, storageClassName: <storageClass>
+      ## If set to "-", storageClassName: "", which disables dynamic provisioning
+      ## If undefined (the default) or set to null, no storageClassName spec is
+      ## set, choosing the default provisioner. (gp2 on AWS, standard on
+      ## GKE, AWS & OpenStack)
+      StorageClass: "-"
+      ## Set default PVC size
+      Size: 10G
+      ## Set default PVC access mode: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
+      AccessMode: ReadWriteOnce
+    Notebook:
+      Enabled: false
+      StorageClass: "-"
+      Size: 10G
+      AccessMode: ReadWriteOnce

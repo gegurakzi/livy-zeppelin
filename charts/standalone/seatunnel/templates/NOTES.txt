@@ -1,0 +1,12 @@
+#######
+##Apache SeaTunnel Helm Chart
+#######
+1. You can submit tasks to any pod by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "seatunnel.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  kubectl exec -it  $POD_NAME  -- cat $SEATUNNEL_HOME/config/hazelcast-client.yaml
+2. You may follow the logs of your job, after a successful startup (which can take on the order of a minute in a fresh environment, seconds afterward) by running these commands:
+  kubectl exec -it  $POD_NAME  -- tail -f $SEATUNNEL_HOME/logs/seatunnel-engine-server.log | grep ConsoleSinkWriter
+3. You can get the REST API URL to submit tasks:
+   For more information, visit: https://seatunnel.apache.org/docs/seatunnel-engine/rest-api
+4. To uninstall chart:
+  helm uninstall {{ .Release.Name }}
