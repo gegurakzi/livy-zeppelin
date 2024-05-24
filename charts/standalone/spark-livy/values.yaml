@@ -34,12 +34,12 @@ Worker:
   Replicas: 3
   Component: "spark-worker"
   Cpu: "100m"
-  Memory: "512Mi"
+  Memory: "4096Mi"
   ContainerPort: 8081
   # Set Worker JVM memory. Default 1g
-  # DaemonMemory: 1g
+  DaemonMemory: 4g
   # Set how much total memory workers have to give executors
-  # ExecutorMemory: 1g
+  ExecutorMemory: 3g
   Autoscaling:
     Enabled: false
   ReplicasMax: 10
@@ -81,14 +81,17 @@ Livy:
     #LIVY_LIVY_SPARK_MASTER: {value: "local[4]"}
     #####################
      # Livy on Spark Standalone Cluster Values
-    LIVY_SPARK_EXECUTOR_MEMORY: {value: "1G"}
+    LIVY_LIVY_SPARK_EXECUTOR_MEMORY: {value: "1G"}
+    LIVY_SPARK_EXECUTOR_CORES: {value: "2"}
     LIVY_SPARK_SHUFFLE_SERVICE_ENABLED: {value: "false"}
-    LIVY_SPARK_DYNAMIC1ALLOCATION_ENABLED: {value: "false"}
+    LIVY_SPARK_DYNAMIC1ALLOCATION_ENABLED: {value: "true"}
+    LIVY_SPARK_DYNAMIC1ALLOCATION_MIN1EXECUTORS: {value: "1"}
+    LIVY_SPARK_DYNAMIC1ALLOCATION_MAX1EXECUTORS: {value: "5"}
     LIVY_SPARK_SQL_EXTENSIONS: {value: "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions"}
-    LIVY_SPARK_SQL_CATALOG_ICEBERG0CATALOG: {value: "org.apache.iceberg.spark.SparkCatalog"}
-    LIVY_SPARK_SQL_CATALOG_ICEBERG0CATALOG_TYPE: {value: "hadoop"}
-    LIVY_SPARK_SQL_CATALOG_ICEBERG0CATALOG_WAREHOUSE: {value: "o3fs://iceberg.catalog.om/warehouse"}
-    LIVY_SPARK_SQL_DEFAULT1CATALOG: {value: "iceberg-catalog"}
+    LIVY_SPARK_SQL_CATALOG_DATAFRAME: {value: "org.apache.iceberg.spark.SparkCatalog"}
+    LIVY_SPARK_SQL_CATALOG_DATAFRAME_TYPE: {value: "hadoop"}
+    LIVY_SPARK_SQL_CATALOG_DATAFRAME_WAREHOUSE: {value: "o3fs://dataframe.catalog.om.ozone/warehouse"}
+    LIVY_SPARK_SQL_DEFAULT1CATALOG: {value: "dataframe"}
   EnvFrom: []
   LivyConf: {}
   SparkDefaultsConf: {}
